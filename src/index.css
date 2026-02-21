@@ -1,0 +1,67 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: #f8fafc;
+    /* slate-50 */
+    --foreground: #0f172a;
+    /* slate-900 */
+
+    --card: #ffffff;
+    --card-foreground: #0f172a;
+
+    --muted: #f1f5f9;
+    /* slate-100 */
+    --muted-foreground: #64748b;
+    /* slate-500 */
+
+    --border: #e2e8f0;
+    /* slate-200 */
+  }
+
+  .dark {
+    --background: #09090b;
+    /* Very dark grayish black */
+    --foreground: #f8fafc;
+
+    --card: #121214;
+    --card-foreground: #f8fafc;
+
+    --muted: #27272a;
+    /* zinc-800 */
+    --muted-foreground: #a1a1aa;
+    /* zinc-400 */
+
+    --border: #27272a;
+    /* zinc-800 */
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html,
+  body {
+    @apply overflow-hidden h-[100dvh];
+  }
+
+  body {
+    @apply bg-background text-foreground bg-gradient-to-b from-zinc-900/20 to-background dark:from-zinc-900 dark:to-background antialiased font-sans selection:bg-brand selection:text-white;
+  }
+}
+
+/* Custom Hide Scrollbar utility */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+}
