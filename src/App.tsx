@@ -11,9 +11,13 @@ import HistoryDetails from './components/HistoryDetails';
 import Sheets from './components/Sheets';
 import Profile from './components/Profile';
 import EditSheet from './components/EditSheet';
-import { Home, History as HistoryIcon, Dumbbell, FileText, User } from 'lucide-react';
+import InsightsArea from './components/InsightsArea';
+import { Home, History as HistoryIcon, Dumbbell, FileText, User, Sparkles } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { WorkoutProvider, useWorkouts } from './context/WorkoutContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import Login from './pages/Login';
+import Register from './pages/Register';
 
 // Layout
 const Layout = ({ children }: { children: React.ReactNode }) => {
@@ -28,6 +32,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 
     const tabsRight = [
         { name: 'Fichas', path: '/sheets', icon: FileText },
+        { name: 'Insights', path: '/insights', icon: Sparkles },
         { name: 'Perfil', path: '/profile', icon: User },
     ];
 
@@ -75,6 +80,50 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     )
 }
 
+function AppContent({ isDarkMode, toggleTheme }: { isDarkMode: boolean, toggleTheme: () => void }) {
+    const { user, isLoading: authLoading } = useAuth();
+
+    if (authLoading) {
+        return (
+            <div className="flex flex-col min-h-screen bg-background items-center justify-center">
+                <div className="w-16 h-16 border-4 border-brand border-t-transparent rounded-full animate-spin"></div>
+            </div>
+        );
+    }
+
+    if (!user) {
+        return (
+            <Routes>
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="*" element={<Navigate to="/login" replace />} />
+            </Routes>
+        );
+    }
+
+    return (
+        <WorkoutProvider>
+            <Layout>
+                <Routes>
+                    <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                    <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/history" element={<History />} />
+                    <Route path="/history/:logId" element={<HistoryDetails />} />
+                    <Route path="/sheets" element={<Sheets />} />
+                    <Route path="/profile" element={<Profile isDarkMode={isDarkMode} toggleTheme={toggleTheme} />} />
+                    <Route path="/import" element={<ImportWorkout />} />
+                    <Route path="/review" element={<ReviewExtraction />} />
+                    <Route path="/edit-sheet/:id" element={<EditSheet />} />
+                    <Route path="/insights" element={<InsightsArea />} />
+                    <Route path="/pre-workout" element={<PreWorkout />} />
+                    <Route path="/workout" element={<WorkoutMode />} />
+                    <Route path="*" element={<Navigate to="/dashboard" replace />} />
+                </Routes>
+            </Layout>
+        </WorkoutProvider>
+    );
+}
+
 function App() {
     const [isDarkMode, setIsDarkMode] = useState(() => {
         const savedTheme = localStorage.getItem('app-theme');
@@ -93,25 +142,11 @@ function App() {
     const toggleTheme = () => setIsDarkMode(!isDarkMode);
 
     return (
-        <WorkoutProvider>
+        <AuthProvider>
             <BrowserRouter>
-                <Layout>
-                    <Routes>
-                        <Route path="/" element={<Navigate to="/dashboard" replace />} />
-                        <Route path="/dashboard" element={<Dashboard />} />
-                        <Route path="/history" element={<History />} />
-                        <Route path="/history/:logId" element={<HistoryDetails />} />
-                        <Route path="/sheets" element={<Sheets />} />
-                        <Route path="/profile" element={<Profile isDarkMode={isDarkMode} toggleTheme={toggleTheme} />} />
-                        <Route path="/import" element={<ImportWorkout />} />
-                        <Route path="/review" element={<ReviewExtraction />} />
-                        <Route path="/edit-sheet/:id" element={<EditSheet />} />
-                        <Route path="/pre-workout" element={<PreWorkout />} />
-                        <Route path="/workout" element={<WorkoutMode />} />
-                    </Routes>
-                </Layout>
+                <AppContent isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
             </BrowserRouter>
-        </WorkoutProvider>
+        </AuthProvider>
     );
 }
 

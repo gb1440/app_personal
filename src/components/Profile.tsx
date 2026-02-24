@@ -1,7 +1,10 @@
 
 import { User, Settings, Award, ChevronRight, Activity, LogOut, Moon, Sun } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 const Profile = ({ isDarkMode, toggleTheme }: { isDarkMode: boolean, toggleTheme: () => void }) => {
+    const { user, logout } = useAuth();
+
     return (
         <div className="flex flex-col h-full bg-background text-foreground p-6">
             <header className="mb-6 flex justify-between items-center">
@@ -18,8 +21,8 @@ const Profile = ({ isDarkMode, toggleTheme }: { isDarkMode: boolean, toggleTheme
                     </div>
                 </div>
                 <div>
-                    <h2 className="text-xl font-bold">Gabriel B.</h2>
-                    <p className="text-sm text-zinc-500">Membro desde Fev 2026</p>
+                    <h2 className="text-xl font-bold line-clamp-1">{user?.email?.split('@')[0] || 'Atleta'}</h2>
+                    <p className="text-xs text-zinc-500 line-clamp-1">{user?.email}</p>
                     <div className="flex items-center gap-1 text-brand mt-1 bg-brand/10 inline-flex px-2 py-0.5 rounded-full text-xs font-bold">
                         <Award className="w-3 h-3" />
                         <span>Atleta Dedicado</span>
@@ -75,7 +78,7 @@ const Profile = ({ isDarkMode, toggleTheme }: { isDarkMode: boolean, toggleTheme
                     <ChevronRight className="w-4 h-4 text-zinc-300" />
                 </div>
 
-                <div className="p-4 flex flex-col justify-start hover:bg-muted transition-colors cursor-pointer active:bg-red-500/10 active:text-red-500 text-red-500">
+                <div onClick={logout} className="p-4 flex flex-col justify-start hover:bg-muted transition-colors cursor-pointer active:bg-red-500/10 active:text-red-500 text-red-500">
                     <div className="flex items-center gap-3 font-medium text-sm">
                         <div className="w-8 h-8 rounded-full bg-red-500/10 flex items-center justify-center">
                             <LogOut className="w-4 h-4 text-red-500" />
