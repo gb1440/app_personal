@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { Dumbbell, LoaderCircle, AlertCircle } from 'lucide-react';
+import { LoaderCircle, AlertCircle } from 'lucide-react';
 import { FirebaseError } from 'firebase/app';
 
 export default function Login() {
@@ -45,8 +45,8 @@ export default function Login() {
 
             <div className="w-full max-w-sm relative z-10">
                 <div className="flex flex-col items-center mb-8">
-                    <div className="w-16 h-16 bg-gradient-to-br from-brand to-brand-light rounded-2xl flex items-center justify-center shadow-lg shadow-brand/20 mb-4 animate-fadeIn">
-                        <Dumbbell className="text-white relative z-10 drop-shadow-md" size={32} />
+                    <div className="w-24 h-24 rounded-3xl overflow-hidden shadow-xl shadow-brand/20 mb-4 animate-fadeIn bg-white border-2 border-brand/20">
+                        <img src="/logo.jpg" alt="Meu Treino Logo" className="w-full h-full object-cover" />
                     </div>
                     <h1 className="text-3xl font-black text-foreground tracking-tight animate-fadeIn" style={{ animationDelay: '0.1s' }}>Meu Treino</h1>
                     <p className="text-muted-foreground mt-2 font-medium tracking-wide text-sm animate-fadeIn" style={{ animationDelay: '0.2s' }}>LUXURY FITNESS</p>
