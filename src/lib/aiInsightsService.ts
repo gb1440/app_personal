@@ -39,7 +39,7 @@ ${JSON.stringify(previousSheets)}
 `;
 
         const response = await openai.chat.completions.create({
-            model: "gpt-5-mini",
+            model: "openai/gpt-5-mini",
             messages: [
                 { role: "system", content: "Você é um assistente fitness fornecendo output JSON ESTRITO e limpo." },
                 { role: "user", content: prompt }
@@ -78,7 +78,7 @@ Sua missão é sugerir UMA alternativa viável que trabalhe a mesma musculatura 
 }`;
 
         const response = await openai.chat.completions.create({
-            model: "gpt-5-mini",
+            model: "openai/gpt-5-mini",
             messages: [
                 { role: "system", content: "Você é um assistente fitness fornecendo output JSON ESTRITO e limpo." },
                 { role: "user", content: prompt }

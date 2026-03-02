@@ -61,7 +61,7 @@ export default function ImportWorkout() {
 
         try {
             const response = await openai.chat.completions.create({
-                model: "gpt-4o-mini",
+                model: "openai/gpt-5-mini",
                 messages: [
                     {
                         role: "system",
