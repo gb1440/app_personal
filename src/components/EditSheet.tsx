@@ -95,7 +95,7 @@ export default function EditSheet() {
                     <ArrowLeft size={20} />
                 </button>
                 <div className="text-center flex-1">
-                    <h2 className="text-[10px] font-bold tracking-[0.2em] text-brand uppercase mb-1">Antigravity</h2>
+                    <h2 className="text-[10px] font-bold tracking-[0.2em] text-brand uppercase mb-1">Ficha de Treino</h2>
                     <h1 className="text-sm font-bold uppercase">Editar Ficha</h1>
                 </div>
                 <div className="w-10 h-10 flex items-center justify-center text-zinc-500 hover:text-brand transition-colors cursor-pointer" onClick={handleSave}>

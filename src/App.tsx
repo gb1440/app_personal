@@ -18,6 +18,7 @@ import { WorkoutProvider, useWorkouts } from './context/WorkoutContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import Chatbot from './components/Chatbot';
 
 // Layout
 const Layout = ({ children }: { children: React.ReactNode }) => {
@@ -76,6 +77,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                     ))}
                 </ul>
             </nav>
+            <Chatbot />
         </div>
     )
 }

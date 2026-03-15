@@ -121,7 +121,7 @@ export default function ReviewExtraction() {
                     <ArrowLeft size={20} />
                 </button>
                 <div className="text-center flex-1">
-                    <h2 className="text-[10px] font-bold tracking-[0.2em] text-brand uppercase mb-1">Antigravity</h2>
+                    <h2 className="text-[10px] font-bold tracking-[0.2em] text-brand uppercase mb-1">Assistente</h2>
                     <h1 className="text-sm font-bold uppercase">Revisar Extração</h1>
                 </div>
                 <div className="w-10 h-10 flex items-center justify-center bg-muted rounded-full">

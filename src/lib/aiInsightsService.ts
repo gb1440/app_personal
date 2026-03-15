@@ -1,5 +1,5 @@
 import { openai } from './openai';
-import { WorkoutSheet, InsightData } from '../context/WorkoutContext';
+import { WorkoutSheet, InsightData, Exercise } from '../context/WorkoutContext';
 
 export async function generateSheetInsights(targetSheet: WorkoutSheet, allSheets: WorkoutSheet[]): Promise<InsightData | null> {
     try {
@@ -94,6 +94,82 @@ Sua missão é sugerir UMA alternativa viável que trabalhe a mesma musculatura 
         return null;
     } catch (e) {
         console.error("Error generating substitution:", e);
+        return null;
+    }
+}
+
+export type GeneratedWorkout = {
+    title: string;
+    exercises: Omit<Exercise, 'id'>[];
+};
+
+export async function generateWorkoutFromPrompt(userPrompt: string): Promise<GeneratedWorkout[] | null> {
+    try {
+        const prompt = `Você é um Personal Trainer atuando como uma Inteligência Artificial.
+O usuário enviou a seguinte solicitação para criar uma nova rotina de treinos:
+"${userPrompt}"
+
+Sua missão é criar uma ou mais fichas de treino perfeitamente estruturadas para atender ao objetivo e às restrições do usuário.
+Devolva ESTRITAMENTE um objeto JSON neste formato, com as chaves em inglês:
+
+{
+  "workouts": [
+    {
+      "title": "Nome da Ficha (Ex: Ficha A - Peito e Tríceps)",
+      "exercises": [
+        { "name": "Nome do Exercício", "sets": "Séries", "reps": "Repetições (Ex: 8-12)", "weight": "", "notes": "Notas ou descanso" }
+      ]
+    }
+  ]
+}
+
+- Em "weight" você pode deixar vazio ou colocar uma sugestão de intensidade se fizer sentido, mas prefira deixar vazio caso não conheça a força do usuário.
+- Inclua aquecimentos adequados se achar necessário nas notas.`;
+
+        const response = await openai.chat.completions.create({
+            model: "openai/gpt-5-mini",
+            messages: [
+                { role: "system", content: "Você é um personal trainer altamente qualificado. Retorne APENAS um JSON estrito, sem textos explicativos." },
+                { role: "user", content: prompt }
+            ],
+            response_format: { type: "json_object" }
+        });
+
+        const content = response.choices[0].message.content;
+        if (content) {
+            const parsed = JSON.parse(content);
+            return parsed.workouts as GeneratedWorkout[];
+        }
+        return null;
+    } catch (e) {
+        console.error("Error generating workout from prompt:", e);
+        return null;
+    }
+}
+
+export async function chatWithTrainer(messages: {role: 'user' | 'assistant', content: string}[]): Promise<string | null> {
+    try {
+        const systemPrompt = `Você é um Personal Trainer Sênior com mais de 15 anos de experiência prática de salão, atuando como o especialista oficial do app.
+Sua especialidade envolve: Biomecânica avançada, Periodização para Hipertrofia e Força, Fisiologia do Exercício e Emagrecimento.
+Seu tom de voz deve ser:
+- Motivador e Enérgico (chame o usuário de "guerreiro(a)", "campeão", ou trate com respeito profissional mas próximo).
+- Direto e sem enrolação (não mande testamentos enormes, o usuário está lendo no celular no meio do treino).
+- Embasado cientificamente, mas com tradução prática (cite o "porquê", mas dê a solução real).
+- Se a dúvida for sobre dor: recomende sempre procurar um médico/fisioterapeuta, mas sugira modificações imediatas no treino (ex: trocar barra por halteres, mudar ângulos).
+- Se a dúvida for sobre dietas: dê dicas super gerais e lembre-os de ir num Nutri.
+- Limite as respostas a 2 ou 3 parágrafos curtos. Sem blábláblá. Responda à dúvida principal imediatamente. Formate com negritos e emojis estratégicos.`;
+
+        const response = await openai.chat.completions.create({
+            model: "openai/gpt-4o-mini",
+            messages: [
+                { role: "system", content: systemPrompt },
+                ...messages
+            ]
+        });
+
+        return response.choices[0].message?.content || null;
+    } catch (e) {
+        console.error("Error in chatWithTrainer:", e);
         return null;
     }
 }

@@ -54,7 +54,7 @@ const Profile = ({ isDarkMode, toggleTheme }: { isDarkMode: boolean, toggleTheme
             <div className="bg-card border border-border rounded-2xl overflow-hidden mb-6">
                 <div
                     onClick={toggleTheme}
-                    className="flex flex-col items-center flex-1 text-zinc-500 hover:text-brand cursor-pointer transition-colors p-4 flex items-center justify-between border-b border-border active:bg-muted"
+                    className="p-4 flex items-center justify-between hover:bg-muted transition-colors cursor-pointer border-b border-border active:bg-muted"
                 >
                     <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
@@ -88,7 +88,6 @@ const Profile = ({ isDarkMode, toggleTheme }: { isDarkMode: boolean, toggleTheme
                 </div>
             </div>
 
-            <p className="text-center text-xs text-zinc-500 mt-4 mb-12">Antigravity Beta v1.0</p>
             <div className="h-6"></div> {/* Bottom padding */}
         </div>
     );

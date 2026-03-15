@@ -1,14 +1,20 @@
 import { useState, useRef, ChangeEvent } from 'react';
-import { Paperclip, Sparkles, ArrowRight, AlignLeft, Loader2 } from 'lucide-react';
+import { Paperclip, Sparkles, ArrowRight, AlignLeft, Loader2, Bot } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import * as pdfjsLib from 'pdfjs-dist';
 import { openai } from '../lib/openai';
+import { generateWorkoutFromPrompt } from '../lib/aiInsightsService';
+import { useWorkouts } from '../context/WorkoutContext';
 
 // Configuração do worker do PDF.js via unpkg/cdn para Vite
 pdfjsLib.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
 
 export default function ImportWorkout() {
     const navigate = useNavigate();
+    const { addSheet } = useWorkouts();
+    const [activeTab, setActiveTab] = useState<'import' | 'generate'>('import');
+    const [generationPrompt, setGenerationPrompt] = useState('');
+    const [isGenerating, setIsGenerating] = useState(false);
     const [rawText, setRawText] = useState('');
     const [isAnalyzing, setIsAnalyzing] = useState(false);
     const [isExtractingPDF, setIsExtractingPDF] = useState(false);
@@ -61,7 +67,7 @@ export default function ImportWorkout() {
 
         try {
             const response = await openai.chat.completions.create({
-                model: "openai/gpt-5-mini",
+                model: "openai/gpt-4o-mini",
                 messages: [
                     {
                         role: "system",
@@ -116,15 +122,70 @@ Sempre retorne APENAS um objeto JSON no formato exato:
         }
     };
 
+    const handleGenerate = async () => {
+        if (!generationPrompt.trim()) return;
+        setIsGenerating(true);
+
+        try {
+            const workouts = await generateWorkoutFromPrompt(generationPrompt);
+            if (workouts && workouts.length > 0) {
+                // Add all generated sheets
+                for (let i = 0; i < workouts.length; i++) {
+                    const w = workouts[i];
+                    const formattedExercises = w.exercises.map((ex, eIndex) => ({
+                        id: Date.now().toString() + i + eIndex,
+                        name: ex.name,
+                        sets: ex.sets,
+                        reps: String(ex.reps),
+                        weight: ex.weight || '',
+                        notes: ex.notes || ''
+                    }));
+                    
+                    await addSheet({
+                        title: w.title,
+                        exercises: formattedExercises,
+                        isActive: i === 0 // Make the first one active
+                    });
+                }
+                navigate('/dashboard');
+            } else {
+                alert("Não foi possível gerar a ficha. Tente detalhar mais o seu objetivo.");
+            }
+        } catch (error) {
+            console.error("Erro ao gerar treino", error);
+            alert("Erro ao conectar com a IA.");
+        } finally {
+            setIsGenerating(false);
+        }
+    };
+
     return (
         <div className="flex flex-col min-h-screen p-4 pb-24">
             {/* Top Bar */}
-            <header className="flex flex-col items-center justify-center mb-8 pt-6">
-                <h2 className="text-[10px] font-bold tracking-[0.2em] text-brand uppercase mb-1">Antigravity</h2>
+            <header className="flex flex-col items-center justify-center mb-6 pt-6">
+                <h2 className="text-[10px] font-bold tracking-[0.2em] text-brand uppercase mb-1">Assistente</h2>
                 <h1 className="text-2xl font-black uppercase text-foreground">Importar Treino</h1>
             </header>
 
-            {/* Hidden Input */}
+            {/* Tab selector */}
+            <div className="flex bg-muted rounded-full p-1 mb-6">
+                <button
+                    onClick={() => setActiveTab('import')}
+                    className={`flex-1 py-2 text-sm font-bold rounded-full transition-all ${activeTab === 'import' ? 'bg-background shadow text-foreground' : 'text-muted-foreground'}`}
+                >
+                    Colar / Importar
+                </button>
+                <button
+                    onClick={() => setActiveTab('generate')}
+                    className={`flex-1 py-2 text-sm font-bold rounded-full transition-all ${activeTab === 'generate' ? 'bg-background shadow text-brand' : 'text-muted-foreground'}`}
+                >
+                    Gerar com IA
+                </button>
+            </div>
+
+            {activeTab === 'import' && (
+                <>
+                    {/* Hidden Input */}
             <input
                 type="file"
                 accept="application/pdf"
@@ -184,7 +245,7 @@ Sempre retorne APENAS um objeto JSON no formato exato:
                 <div className="bg-card/40 border border-border/50 rounded-2xl p-4 flex gap-4 items-start">
                     <Sparkles size={20} className="text-brand shrink-0 mt-0.5" />
                     <div>
-                        <h4 className="font-bold text-xs text-brand uppercase tracking-wider mb-1">IA Antigravity (GPT-4)</h4>
+                        <h4 className="font-bold text-xs text-brand uppercase tracking-wider mb-1">Inteligência Artificial (GPT)</h4>
                         <p className="text-xs text-muted-foreground leading-relaxed">
                             A nova inteligência interpretará as nomenclaturas, séries e repetições automaticamente e perfeitamente.
                         </p>
@@ -210,6 +271,58 @@ Sempre retorne APENAS um objeto JSON no formato exato:
                     </>
                 )}
             </button>
+                </>
+            )}
+
+            {activeTab === 'generate' && (
+                <>
+                    <section className="mb-6 flex-1 flex flex-col">
+                        <div className="flex items-center gap-2 mb-3">
+                            <Bot size={16} className="text-brand" />
+                            <h3 className="font-bold text-sm text-brand uppercase tracking-wider">Descreva seu objetivo</h3>
+                        </div>
+
+                        <div className="bg-card border border-brand/30 rounded-3xl p-1 relative flex-1 min-h-[150px] shadow-[0_0_15px_rgba(37,95,245,0.05)]">
+                            <textarea
+                                value={generationPrompt}
+                                onChange={(e) => setGenerationPrompt(e.target.value)}
+                                className="w-full h-full bg-transparent border-none resize-none p-5 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none hide-scrollbar"
+                                placeholder="Ex: Treino de hipertrofia para costas, tenho 4 dias na semana."
+                            ></textarea>
+                        </div>
+                    </section>
+                    
+                    <section className="mb-8">
+                        <div className="bg-card/40 border border-border/50 rounded-2xl p-4 flex gap-4 items-start">
+                            <Sparkles size={20} className="text-brand shrink-0 mt-0.5" />
+                            <div>
+                                <h4 className="font-bold text-xs text-brand uppercase tracking-wider mb-1">Personal IA (GPT-5 Mini)</h4>
+                                <p className="text-xs text-muted-foreground leading-relaxed">
+                                    A inteligência do app vai criar uma ficha completa e salvar automaticamente para você.
+                                </p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <button
+                        onClick={handleGenerate}
+                        disabled={isGenerating || !generationPrompt.trim()}
+                        className="w-full bg-brand disabled:bg-brand/50 disabled:cursor-not-allowed text-white font-bold py-4 px-6 rounded-2xl flex items-center justify-center gap-2 hover:bg-brand-light active:scale-[0.98] transition-all shadow-[0_10px_30px_rgba(37,95,245,0.4)]"
+                    >
+                        {isGenerating ? (
+                            <>
+                                <Loader2 size={18} className="animate-spin" />
+                                <span className="text-sm tracking-wider uppercase">Criando Treino...</span>
+                            </>
+                        ) : (
+                            <>
+                                <span className="text-sm tracking-wider uppercase">Gerar Ficha</span>
+                                <ArrowRight size={18} />
+                            </>
+                        )}
+                    </button>
+                </>
+            )}
         </div>
     );
 }

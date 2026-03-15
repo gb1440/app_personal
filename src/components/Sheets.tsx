@@ -68,7 +68,7 @@ const Sheets = () => {
     );
 
     return (
-        <div className="flex flex-col h-full bg-background text-foreground p-6">
+        <div className="flex flex-col min-h-full bg-background text-foreground p-6">
             <header className="mb-6 flex justify-between items-center">
                 <div>
                     <h1 className="text-2xl font-bold font-sans">Fichas</h1>
@@ -104,7 +104,7 @@ const Sheets = () => {
                         <>
                             <h2 className="text-sm font-semibold text-zinc-500 mb-4 uppercase tracking-wider">Ficha Atual</h2>
 
-                            <div className="bg-gradient-to-br from-brand to-brand-light rounded-3xl p-6 text-white shadow-xl shadow-brand/20 mb-8 relative overflow-hidden min-h-40 flex flex-col justify-between gap-4">
+                            <div className="bg-gradient-to-br from-brand to-brand-light rounded-3xl p-6 text-white shadow-xl shadow-brand/20 mb-8 relative overflow-hidden min-h-[160px] flex flex-col justify-between gap-4 shrink-0">
                                 <div className="absolute -right-4 -top-4 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
                                 <div className="absolute -bottom-8 -left-8 w-40 h-40 bg-black/10 rounded-full blur-2xl"></div>
 
