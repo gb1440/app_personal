@@ -82,7 +82,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     )
 }
 
-function AppContent({ isDarkMode, toggleTheme }: { isDarkMode: boolean, toggleTheme: () => void }) {
+function AppContent({ theme, setTheme }: { theme: 'light' | 'dark' | 'pink', setTheme: (t: 'light' | 'dark' | 'pink') => void }) {
     const { user, isLoading: authLoading } = useAuth();
 
     if (authLoading) {
@@ -112,7 +112,7 @@ function AppContent({ isDarkMode, toggleTheme }: { isDarkMode: boolean, toggleTh
                     <Route path="/history" element={<History />} />
                     <Route path="/history/:logId" element={<HistoryDetails />} />
                     <Route path="/sheets" element={<Sheets />} />
-                    <Route path="/profile" element={<Profile isDarkMode={isDarkMode} toggleTheme={toggleTheme} />} />
+                    <Route path="/profile" element={<Profile theme={theme} setTheme={setTheme} />} />
                     <Route path="/import" element={<ImportWorkout />} />
                     <Route path="/review" element={<ReviewExtraction />} />
                     <Route path="/edit-sheet/:id" element={<EditSheet />} />
@@ -127,26 +127,25 @@ function AppContent({ isDarkMode, toggleTheme }: { isDarkMode: boolean, toggleTh
 }
 
 function App() {
-    const [isDarkMode, setIsDarkMode] = useState(() => {
-        const savedTheme = localStorage.getItem('app-theme');
-        return savedTheme ? savedTheme === 'dark' : true;
+    const [theme, setTheme] = useState<'light' | 'dark' | 'pink'>(() => {
+        const savedTheme = localStorage.getItem('app-theme') as 'light' | 'dark' | 'pink' | null;
+        return savedTheme || 'dark';
     });
 
     useEffect(() => {
-        if (isDarkMode) {
+        document.documentElement.classList.remove('dark', 'theme-pink');
+        if (theme === 'dark') {
             document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
+        } else if (theme === 'pink') {
+            document.documentElement.classList.add('theme-pink');
         }
-        localStorage.setItem('app-theme', isDarkMode ? 'dark' : 'light');
-    }, [isDarkMode]);
-
-    const toggleTheme = () => setIsDarkMode(!isDarkMode);
+        localStorage.setItem('app-theme', theme);
+    }, [theme]);
 
     return (
         <AuthProvider>
             <BrowserRouter>
-                <AppContent isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
+                <AppContent theme={theme} setTheme={setTheme} />
             </BrowserRouter>
         </AuthProvider>
     );

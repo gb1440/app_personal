@@ -20,9 +20,9 @@ export default {
                     foreground: "var(--muted-foreground)",
                 },
                 brand: {
-                    DEFAULT: '#255ff5',
-                    light: '#5e8af7',
-                    dark: '#1a43a8',
+                    DEFAULT: "var(--brand)",
+                    light: "var(--brand-light)",
+                    dark: "var(--brand-dark)",
                 }
             },
             keyframes: {

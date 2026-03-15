@@ -19,6 +19,10 @@
 
     --border: #e2e8f0;
     /* slate-200 */
+    
+    --brand: #255ff5;
+    --brand-light: #5e8af7;
+    --brand-dark: #1a43a8;
   }
 
   .dark {
@@ -36,6 +40,27 @@
 
     --border: #27272a;
     /* zinc-800 */
+
+    --brand: #255ff5;
+    --brand-light: #5e8af7;
+    --brand-dark: #1a43a8;
+  }
+
+  .theme-pink {
+    --background: #fff0f5; /* Lavender Blush */
+    --foreground: #4a0e2e; /* Escuro/Vinho para texto */
+
+    --card: #ffffff;
+    --card-foreground: #4a0e2e;
+
+    --muted: #fce4ec;
+    --muted-foreground: #ad6d8f;
+
+    --border: #f8bbd0;
+
+    --brand: #e91e63; /* Pink */
+    --brand-light: #ec407a;
+    --brand-dark: #c2185b;
   }
 }
 

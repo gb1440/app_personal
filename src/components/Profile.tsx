@@ -1,12 +1,12 @@
 
-import { User, Settings, Award, ChevronRight, Activity, LogOut, Moon, Sun } from 'lucide-react';
+import { User, Settings, Award, ChevronRight, Activity, LogOut, Moon, Sun, Palette } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
-const Profile = ({ isDarkMode, toggleTheme }: { isDarkMode: boolean, toggleTheme: () => void }) => {
+const Profile = ({ theme, setTheme }: { theme: 'light' | 'dark' | 'pink', setTheme: (t: 'light' | 'dark' | 'pink') => void }) => {
     const { user, logout } = useAuth();
 
     return (
-        <div className="flex flex-col h-full bg-background text-foreground p-6">
+        <div className="flex flex-col min-h-full bg-background text-foreground p-6 pb-12">
             <header className="mb-6 flex justify-between items-center">
                 <h1 className="text-2xl font-bold font-sans">Perfil</h1>
                 <div className="w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center cursor-pointer hover:bg-muted transition-colors">
@@ -52,19 +52,32 @@ const Profile = ({ isDarkMode, toggleTheme }: { isDarkMode: boolean, toggleTheme
             <h2 className="text-sm font-semibold text-zinc-500 mb-4 uppercase tracking-wider">Ajustes</h2>
 
             <div className="bg-card border border-border rounded-2xl overflow-hidden mb-6">
-                <div
-                    onClick={toggleTheme}
-                    className="p-4 flex items-center justify-between hover:bg-muted transition-colors cursor-pointer border-b border-border active:bg-muted"
-                >
+                <div className="p-4 flex flex-col gap-4 border-b border-border">
                     <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
-                            {isDarkMode ? <Sun className="w-4 h-4 text-zinc-400" /> : <Moon className="w-4 h-4 text-zinc-400" />}
+                            <Palette className="w-4 h-4 text-zinc-400" />
                         </div>
                         <span className="font-medium text-sm">Aparência</span>
                     </div>
-                    <div className="flex items-center gap-2">
-                        <span className="text-xs text-zinc-500">{isDarkMode ? 'Escuro' : 'Claro'}</span>
-                        <ChevronRight className="w-4 h-4 text-zinc-300" />
+                    <div className="flex gap-2">
+                        <button
+                            onClick={() => setTheme('light')}
+                            className={`flex-1 py-2 text-xs font-semibold rounded-lg flex items-center justify-center gap-1 transition-all ${theme === 'light' ? 'bg-brand text-white shadow-md' : 'bg-muted text-zinc-500 hover:bg-muted/80'}`}
+                        >
+                            <Sun className="w-3 h-3" /> Claro
+                        </button>
+                        <button
+                            onClick={() => setTheme('dark')}
+                            className={`flex-1 py-2 text-xs font-semibold rounded-lg flex items-center justify-center gap-1 transition-all ${theme === 'dark' ? 'bg-brand text-white shadow-md' : 'bg-muted text-zinc-500 hover:bg-muted/80'}`}
+                        >
+                            <Moon className="w-3 h-3" /> Escuro
+                        </button>
+                        <button
+                            onClick={() => setTheme('pink')}
+                            className={`flex-1 py-2 text-xs font-semibold rounded-lg flex items-center justify-center gap-1 transition-all ${theme === 'pink' ? 'bg-brand text-white shadow-md' : 'bg-muted text-zinc-500 hover:bg-muted/80'}`}
+                        >
+                            <Palette className="w-3 h-3" /> Rosa
+                        </button>
                     </div>
                 </div>
 
