@@ -61,13 +61,17 @@ export default function ImportWorkout() {
         }
     };
 
+    const cleanJson = (text: string) => {
+        return text.replace(/```json\n?|```/g, '').trim();
+    };
+
     const handleAnalyze = async () => {
         if (!rawText.trim()) return;
         setIsAnalyzing(true);
 
         try {
             const response = await openai.chat.completions.create({
-                model: "openai/gpt-4o-mini",
+                model: "deepseek/deepseek-v4-flash",
                 messages: [
                     {
                         role: "system",
@@ -94,12 +98,11 @@ Sempre retorne APENAS um objeto JSON no formato exato:
                         content: rawText
                     }
                 ],
-                response_format: { type: "json_object" }
             });
 
             const content = response.choices[0].message?.content;
             if (content) {
-                const parsed = JSON.parse(content);
+                const parsed = JSON.parse(cleanJson(content));
                 // Map the new structure
                 const workouts = (parsed.workouts || []).map((w: any, wIndex: number) => ({
                     title: w.title || "Treino " + (wIndex + 1),
@@ -245,7 +248,7 @@ Sempre retorne APENAS um objeto JSON no formato exato:
                 <div className="bg-card/40 border border-border/50 rounded-2xl p-4 flex gap-4 items-start">
                     <Sparkles size={20} className="text-brand shrink-0 mt-0.5" />
                     <div>
-                        <h4 className="font-bold text-xs text-brand uppercase tracking-wider mb-1">Inteligência Artificial (GPT)</h4>
+                        <h4 className="font-bold text-xs text-brand uppercase tracking-wider mb-1">Inteligência Artificial (DeepSeek)</h4>
                         <p className="text-xs text-muted-foreground leading-relaxed">
                             A nova inteligência interpretará as nomenclaturas, séries e repetições automaticamente e perfeitamente.
                         </p>
@@ -296,7 +299,7 @@ Sempre retorne APENAS um objeto JSON no formato exato:
                         <div className="bg-card/40 border border-border/50 rounded-2xl p-4 flex gap-4 items-start">
                             <Sparkles size={20} className="text-brand shrink-0 mt-0.5" />
                             <div>
-                                <h4 className="font-bold text-xs text-brand uppercase tracking-wider mb-1">Personal IA (GPT-5 Mini)</h4>
+                                <h4 className="font-bold text-xs text-brand uppercase tracking-wider mb-1">Personal IA (DeepSeek V4)</h4>
                                 <p className="text-xs text-muted-foreground leading-relaxed">
                                     A inteligência do app vai criar uma ficha completa e salvar automaticamente para você.
                                 </p>

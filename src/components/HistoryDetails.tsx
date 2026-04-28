@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useWorkouts } from '../context/WorkoutContext';
-import { ArrowLeft, Dumbbell, Calendar, FileText } from 'lucide-react';
+import { ArrowLeft, Dumbbell, Calendar, FileText, Download } from 'lucide-react';
+import { downloadBase64File } from '../lib/downloadFile';
 
 const HistoryDetails = () => {
     const { logId } = useParams();
@@ -88,13 +89,12 @@ const HistoryDetails = () => {
                                 <p className="text-xs text-muted-foreground">{log.pdfName || 'treino.pdf'}</p>
                             </div>
                         </div>
-                        <a
-                            href={log.pdfUrl}
-                            download={log.pdfName || "treino.pdf"}
-                            className="text-xs font-bold text-blue-500 bg-blue-500/10 px-3 py-1.5 rounded-full hover:bg-blue-500 hover:text-white transition-colors"
+                        <button
+                            onClick={() => downloadBase64File(log.pdfUrl!, log.pdfName || "treino.pdf")}
+                            className="text-xs font-bold flex items-center gap-1.5 text-blue-500 bg-blue-500/10 px-3 py-1.5 rounded-full hover:bg-blue-500 hover:text-white transition-colors"
                         >
                             Baixar
-                        </a>
+                        </button>
                     </div>
                 )}
 

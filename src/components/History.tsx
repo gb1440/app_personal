@@ -2,6 +2,7 @@ import { useState, ChangeEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { History as HistoryIcon, Calendar, FileText, Plus, LoaderCircle } from 'lucide-react';
 import { useWorkouts } from '../context/WorkoutContext';
+import { downloadBase64File } from '../lib/downloadFile';
 
 const History = () => {
     const { historyLogs, updateHistoryLog } = useWorkouts();
@@ -74,14 +75,15 @@ const History = () => {
                                 </div>
                                 <div className="flex gap-2 items-center">
                                     {log.pdfUrl ? (
-                                        <a
-                                            href={log.pdfUrl}
-                                            download={log.pdfName || "treino.pdf"}
-                                            onClick={(e) => e.stopPropagation()}
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                downloadBase64File(log.pdfUrl!, log.pdfName || "treino.pdf");
+                                            }}
                                             className="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-500 hover:bg-blue-500 hover:text-white transition-colors cursor-pointer"
                                         >
                                             <FileText size={16} />
-                                        </a>
+                                        </button>
                                     ) : (
                                         <label
                                             className="w-8 h-8 rounded-full bg-zinc-500/10 flex items-center justify-center text-zinc-500 hover:bg-zinc-500 hover:text-white transition-colors cursor-pointer relative"

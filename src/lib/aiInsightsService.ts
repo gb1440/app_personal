@@ -1,6 +1,10 @@
 import { openai } from './openai';
 import { WorkoutSheet, InsightData, Exercise } from '../context/WorkoutContext';
 
+const cleanJson = (text: string) => {
+    return text.replace(/```json\n?|```/g, '').trim();
+};
+
 export async function generateSheetInsights(targetSheet: WorkoutSheet, allSheets: WorkoutSheet[]): Promise<InsightData | null> {
     try {
         // Prepare context for the AI
@@ -39,17 +43,16 @@ ${JSON.stringify(previousSheets)}
 `;
 
         const response = await openai.chat.completions.create({
-            model: "openai/gpt-5-mini",
+            model: "deepseek/deepseek-v4-flash",
             messages: [
                 { role: "system", content: "Você é um assistente fitness fornecendo output JSON ESTRITO e limpo." },
                 { role: "user", content: prompt }
             ],
-            response_format: { type: "json_object" }
         });
 
         const content = response.choices[0].message.content;
         if (content) {
-            const parsed = JSON.parse(content) as InsightData;
+            const parsed = JSON.parse(cleanJson(content)) as InsightData;
             return parsed;
         }
         return null;
@@ -78,17 +81,16 @@ Sua missão é sugerir UMA alternativa viável que trabalhe a mesma musculatura 
 }`;
 
         const response = await openai.chat.completions.create({
-            model: "openai/gpt-5-mini",
+            model: "deepseek/deepseek-v4-flash",
             messages: [
                 { role: "system", content: "Você é um assistente fitness fornecendo output JSON ESTRITO e limpo." },
                 { role: "user", content: prompt }
             ],
-            response_format: { type: "json_object" }
         });
 
         const content = response.choices[0].message.content;
         if (content) {
-            const parsed = JSON.parse(content) as ExerciseSubstitution;
+            const parsed = JSON.parse(cleanJson(content)) as ExerciseSubstitution;
             return parsed;
         }
         return null;
@@ -127,17 +129,16 @@ Devolva ESTRITAMENTE um objeto JSON neste formato, com as chaves em inglês:
 - Inclua aquecimentos adequados se achar necessário nas notas.`;
 
         const response = await openai.chat.completions.create({
-            model: "openai/gpt-5-mini",
+            model: "deepseek/deepseek-v4-flash",
             messages: [
                 { role: "system", content: "Você é um personal trainer altamente qualificado. Retorne APENAS um JSON estrito, sem textos explicativos." },
                 { role: "user", content: prompt }
             ],
-            response_format: { type: "json_object" }
         });
 
         const content = response.choices[0].message.content;
         if (content) {
-            const parsed = JSON.parse(content);
+            const parsed = JSON.parse(cleanJson(content));
             return parsed.workouts as GeneratedWorkout[];
         }
         return null;
@@ -160,7 +161,7 @@ Seu tom de voz deve ser:
 - Limite as respostas a 2 ou 3 parágrafos curtos. Sem blábláblá. Responda à dúvida principal imediatamente. Formate com negritos e emojis estratégicos.`;
 
         const response = await openai.chat.completions.create({
-            model: "openai/gpt-4o-mini",
+            model: "deepseek/deepseek-v4-flash",
             messages: [
                 { role: "system", content: systemPrompt },
                 ...messages
