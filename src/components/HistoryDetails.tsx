@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useWorkouts } from '../context/WorkoutContext';
-import { ArrowLeft, Dumbbell, Calendar, FileText, Download } from 'lucide-react';
+import { ArrowLeft, Dumbbell, Calendar, FileText } from 'lucide-react';
 import { downloadBase64File } from '../lib/downloadFile';
 
 const HistoryDetails = () => {
